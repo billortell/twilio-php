@@ -42,9 +42,10 @@
     if($response->IsError)
     	echo "Error fetching recent calls: {$response->ErrorMessage}";
     else {
-    	foreach($response->ResponseXml->Calls->Call AS $call)
+    	foreach($response->ResponseXml->Calls->Call AS $call) {
     		echo "Call from {$call->Caller} to {$call->Called}";
     		echo " at {$call->StartTime} of length: {$call->Duration}\n";
+      }
     }
     
     // ========================================================================
@@ -55,9 +56,10 @@
     if($response->IsError)
     	echo "Error fetching recent notifications: {$response->ErrorMessage}";
     else {
-    	foreach($response->ResponseXml->Notifications->Notification AS $notification)
+    	foreach($response->ResponseXml->Notifications->Notification AS $notification) {
     		echo "Log entry (level {$notification->Log}) on ";
     		echo "{$notification->MessageDate}: {$notification->MessageText}\n";
+      }
     }
     
     // ========================================================================
@@ -74,10 +76,11 @@
     } else {
     	
     	// iterate over recordings found
-    	foreach($response->ResponseXml->Recordings->Recording AS $recording)
+    	foreach($response->ResponseXml->Recordings->Recording AS $recording) {
     		echo "Recording of duration {$recording->Duration} seconds made ";
     		echo "on:{$recording->DateCreated} at URL: ";
     		echo "/Accounts/$AccountSid/Recordings/{$recording->Sid}\n";
+      }
     }
     
     // ========================================================================

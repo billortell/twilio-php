@@ -88,6 +88,7 @@
         protected $Endpoint;
         protected $AccountSid;
         protected $AuthToken;
+        protected $IsSynchronous = true;
         
         /*
          * __construct 
@@ -163,21 +164,25 @@
             curl_setopt($curl, CURLOPT_USERPWD,
                 $pwd = "{$this->AccountSid}:{$this->AuthToken}");
             
-            // do the request. If FALSE, then an exception occurred    
-            if(FALSE === ($result = curl_exec($curl)))
-                throw(new TwilioException(
-                    "Curl failed with error " . curl_error($curl)));
-            
-            // get result code
-            $responseCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-            
             // unlink tmpfiles
             if($fp)
                 fclose($fp);
             if(strlen($tmpfile))
                 unlink($tmpfile);
+            
+            if($this->IsSynchronous) {
+                // do the request. If FALSE, then an exception occurred    
+                if(FALSE === ($result = curl_exec($curl)))
+                    throw(new TwilioException(
+                        "Curl failed with error " . curl_error($curl)));
                 
-            return new TwilioRestResponse($url, $result, $responseCode);
+                // get result code
+                $responseCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+                    
+                return new TwilioRestResponse($url, $result, $responseCode);
+            } else {
+                return $this->mc->addCurl($curl);
+            }
         }
     }    
         
