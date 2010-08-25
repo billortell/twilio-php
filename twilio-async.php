@@ -14,6 +14,11 @@
             $this->mc = TwilioRestRequestAsync::getInstance();
             parent::__construct($accountSid, $authToken, $endpoint);
         }
+
+        public function request($path, $method = "GET", $vars = array()) {
+            $curl = $this->getCurlHandle($path, $method, $vars);
+            return $this->mc->addCurl($curl);
+        }
     }
 
 

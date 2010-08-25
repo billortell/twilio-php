@@ -114,6 +114,19 @@
          * send, for GET will be appended to the URL as query params
          */
         public function request($path, $method = "GET", $vars = array()) {
+            $curl = $this->getCurlHandle($path, $method, $vars);
+            // do the request. If FALSE, then an exception occurred    
+            if(FALSE === ($result = curl_exec($curl)))
+                throw(new TwilioException(
+                    "Curl failed with error " . curl_error($curl)));
+            
+            // get result code
+            $responseCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+                
+            return new TwilioRestResponse($url, $result, $responseCode);
+        }
+
+        protected function getCurlHandle($path, $method = "GET", $vars = array()) {
             $fp = null;
             $tmpfile = "";
             $encoded = "";
@@ -169,20 +182,8 @@
                 fclose($fp);
             if(strlen($tmpfile))
                 unlink($tmpfile);
-            
-            if($this->IsSynchronous) {
-                // do the request. If FALSE, then an exception occurred    
-                if(FALSE === ($result = curl_exec($curl)))
-                    throw(new TwilioException(
-                        "Curl failed with error " . curl_error($curl)));
-                
-                // get result code
-                $responseCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-                    
-                return new TwilioRestResponse($url, $result, $responseCode);
-            } else {
-                return $this->mc->addCurl($curl);
-            }
+
+            return $curl;
         }
     }    
         
